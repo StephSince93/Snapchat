@@ -16,6 +16,7 @@ class SignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
     }
     
     @IBAction func signinTapped(_ sender: Any)
@@ -35,6 +36,9 @@ class SignInViewController: UIViewController {
                     }
                     else{
                         print("Created user Successfully!")
+                        
+                       //adds the user id and email to the firebase database
+                       FIRDatabase.database().reference().child("users").child(user!.uid).child("email").setValue(user!.email)
 
                     }
                 })
