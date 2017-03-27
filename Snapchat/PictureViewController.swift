@@ -13,6 +13,8 @@ class PictureViewController: UIViewController,UIImagePickerControllerDelegate,UI
     
     
     var imagePicker = UIImagePickerController()
+    
+    var uuid = NSUUID().uuidString
 
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!
@@ -22,6 +24,7 @@ class PictureViewController: UIViewController,UIImagePickerControllerDelegate,UI
 
         imagePicker.delegate = self
         // Do any additional setup after loading the view.
+        nextButton.isEnabled = false
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
@@ -32,13 +35,15 @@ class PictureViewController: UIViewController,UIImagePickerControllerDelegate,UI
         
      imageView.backgroundColor = UIColor.clear
         
+     nextButton.isEnabled = true
+        
      imagePicker.dismiss(animated: true, completion: nil)
     
     }
     @IBAction func cameraTapped(_ sender: Any)
     {
         
-        imagePicker.sourceType = .savedPhotosAlbum
+        imagePicker.sourceType = .camera
         imagePicker.allowsEditing = false
         present(imagePicker, animated: true, completion: nil)
         
@@ -52,7 +57,7 @@ class PictureViewController: UIViewController,UIImagePickerControllerDelegate,UI
         //compressed the photo into a JPEG format
         let imageData = UIImageJPEGRepresentation(imageView.image!, 0.1)!
         //NSUUID().uuidString creates a unique name for the picute being saved to the database, so no duplicates
-        imagesFolder.child("\(NSUUID().uuidString).jpg").put(imageData, metadata: nil, completion:
+        imagesFolder.child("\(uuid).jpg").put(imageData, metadata: nil, completion:
             {(metadata, error) in
                 
                 print("We tried to upload")
@@ -64,7 +69,7 @@ class PictureViewController: UIViewController,UIImagePickerControllerDelegate,UI
                     //prints the url where the picture will be downloaded in firebase so user can look up
                  //     print(metadata?.downloadURL())
                     
-                     self.performSegue(withIdentifier: "selectUserSegue", sender: metadata?.downloadURL()!.absoluteString)
+                     self.performSegue(withIdentifier: "selectUserSegue", sender: metadata!.downloadURL()!.absoluteString)
                 }
                 
         })
@@ -79,6 +84,7 @@ class PictureViewController: UIViewController,UIImagePickerControllerDelegate,UI
         
         nextVC.imageURL = sender as! String
         nextVC.descrip = descriptionText.text!
+        nextVC.uuid = uuid
         
         
         
